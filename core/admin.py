@@ -1,23 +1,51 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User
+from .models import User, Student, Class, Teacher, Subject, ClassSubject
 
+# 1. Custom User Admin
 class CustomUserAdmin(UserAdmin):
-    # This controls what you see when you click on a user to edit them
     fieldsets = UserAdmin.fieldsets + (
         ('Custom Fields', {'fields': ('role',)}),
     )
-    
-    # This controls what you see when you add a NEW user
     add_fieldsets = UserAdmin.add_fieldsets + (
         ('Custom Fields', {'fields': ('role',)}),
     )
-    
-    # This controls the columns in the list view (the table of all users)
-    list_display = ('username', 'email', 'role', 'is_staff', 'is_active')
-    
-    # This adds filters on the right side (filter by Role!)
-    list_filter = ('role', 'is_staff', 'is_active')
+    list_display = ('username', 'email', 'role', 'is_staff')
+    list_filter = ('role', 'is_staff')
 
-# Register your User model with this custom configuration
 admin.site.register(User, CustomUserAdmin)
+
+# 2. Class Admin
+@admin.register(Class)
+class ClassAdmin(admin.ModelAdmin):
+    list_display = ('name', 'class_master', 'academic_year')
+    search_fields = ('name',)
+
+# 3. Student Admin
+@admin.register(Student)
+class StudentAdmin(admin.ModelAdmin):
+    list_display = ('user', 'admission_number', 'current_class', 'enrolled_at')
+    search_fields = ('admission_number', 'user__username')
+    list_filter = ('current_class',)
+
+# --- NEW ADDITIONS ---
+
+# 4. Teacher Admin
+@admin.register(Teacher)
+class TeacherAdmin(admin.ModelAdmin):
+    list_display = ('user', 'staff_id', 'phone_number')
+    search_fields = ('user__username', 'staff_id')
+
+# 5. Subject Admin
+@admin.register(Subject)
+class SubjectAdmin(admin.ModelAdmin):
+    list_display = ('name', 'is_core')
+    list_filter = ('is_core',)
+
+# 6. ClassSubject Admin (The Schedule)
+@admin.register(ClassSubject)
+class ClassSubjectAdmin(admin.ModelAdmin):
+    # This shows: "JHS 1 | Math | Mr. Osei" in the list
+    list_display = ('class_assigned', 'subject', 'teacher')
+    # Filter by class so you can see "All subjects for JHS 1"
+    list_filter = ('class_assigned', 'subject')
