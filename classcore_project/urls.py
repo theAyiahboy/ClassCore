@@ -20,3 +20,16 @@ from django.urls import path
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
+
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    # The Admin Panel (We used this in Week 2)
+    path('admin/', admin.site.urls),
+
+    # The API Endpoints (Week 3)
+    # We are telling Django: "Any URL that starts with 'api/', 
+    # go look in the core/urls.py file for instructions."
+    path('api/', include('core.urls')),
+]
