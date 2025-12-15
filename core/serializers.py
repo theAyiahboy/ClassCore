@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import User, Class, Student, Teacher, Subject, ClassSubject
+from .models import Attendance, Grade 
 
 # 1. User Serializer (Translates the User Model)
 class UserSerializer(serializers.ModelSerializer):
@@ -76,3 +77,25 @@ class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subject
         fields = ['id', 'name', 'is_core']
+
+
+
+
+
+
+#  Attendance Serializer
+class AttendanceSerializer(serializers.ModelSerializer):
+    student_details = StudentSerializer(source='student', read_only=True)
+    
+    class Meta:
+        model = Attendance
+        fields = ['id', 'student', 'student_details', 'class_assigned', 'date', 'status']
+
+# 7. Grade Serializer
+class GradeSerializer(serializers.ModelSerializer):
+    student_details = StudentSerializer(source='student', read_only=True)
+    subject_details = SubjectSerializer(source='subject', read_only=True)
+
+    class Meta:
+        model = Grade
+        fields = ['id', 'student', 'student_details', 'subject', 'subject_details', 'assessment_type', 'score', 'term']

@@ -130,3 +130,39 @@ class ClassSubject(models.Model):
 
     def __str__(self):
         return f"{self.subject.name} for {self.class_assigned.name}"
+
+
+
+# Attendance Model
+class Attendance(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    class_assigned = models.ForeignKey(Class, on_delete=models.CASCADE)
+    date = models.DateField()
+    status = models.CharField(
+        max_length=10, 
+        choices=[('PRESENT', 'Present'), ('ABSENT', 'Absent')], 
+        default='PRESENT'
+    )
+
+    class Meta:
+        # CONSTRAINT: A student can only be marked once per day
+        unique_together = ['student', 'date']
+
+    def __str__(self):
+        return f"{self.student} - {self.date} - {self.status}"
+
+#  Grade Model (Assessment)
+class Grade(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    assessment_type = models.CharField(
+        max_length=20,
+        choices=[('TEST', 'Class Test'), ('EXAM', 'Exam'), ('PROJECT', 'Project')],
+        default='TEST'
+    )
+    score = models.DecimalField(max_digits=5, decimal_places=2) # e.g. 85.50
+    term = models.CharField(max_length=20, default="First Term")
+    date_recorded = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.student} - {self.subject} - {self.score}"

@@ -3,13 +3,14 @@ from .models import Class, Student, Teacher
 from .serializers import ClassSerializer, StudentSerializer, TeacherSerializer
 from .models import Class, Student, Teacher, Subject  # Added Subject
 from .serializers import ClassSerializer, StudentSerializer, TeacherSerializer, SubjectSerializer # Added SubjectSerializer
+from .models import Class, Student, Teacher, Subject, Attendance, Grade
+from .serializers import ClassSerializer, StudentSerializer, TeacherSerializer, SubjectSerializer, AttendanceSerializer, GradeSerializer
 
-# ... (Leave your other ViewSets alone)
 
-# ==========================================
+
 # THE LOGIC LAYER (Views)
 # These classes decide what happens when a request comes in.
-# ==========================================
+
 
 class ClassViewSet(viewsets.ModelViewSet):
     """
@@ -45,3 +46,18 @@ class SubjectViewSet(viewsets.ModelViewSet):
     """
     queryset = Subject.objects.all()
     serializer_class = SubjectSerializer
+
+
+class AttendanceViewSet(viewsets.ModelViewSet):
+    """
+    URL: /api/attendance/
+    """
+    queryset = Attendance.objects.all()
+    serializer_class = AttendanceSerializer
+
+class GradeViewSet(viewsets.ModelViewSet):
+    """
+    URL: /api/grades/
+    """
+    queryset = Grade.objects.all()
+    serializer_class = GradeSerializer

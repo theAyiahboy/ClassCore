@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, Student, Class, Teacher, Subject, ClassSubject
+from .models import User, Student, Class, Teacher, Subject, ClassSubject, Attendance, Grade
 
 # 1. Custom User Admin
 class CustomUserAdmin(UserAdmin):
@@ -19,33 +19,41 @@ admin.site.register(User, CustomUserAdmin)
 @admin.register(Class)
 class ClassAdmin(admin.ModelAdmin):
     list_display = ('name', 'class_master', 'academic_year')
-    search_fields = ('name',)
 
 # 3. Student Admin
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('user', 'admission_number', 'current_class', 'enrolled_at')
+    list_display = ('user', 'admission_number', 'current_class')
     search_fields = ('admission_number', 'user__username')
-    list_filter = ('current_class',)
-
-# --- NEW ADDITIONS ---
 
 # 4. Teacher Admin
 @admin.register(Teacher)
 class TeacherAdmin(admin.ModelAdmin):
-    list_display = ('user', 'staff_id', 'phone_number')
-    search_fields = ('user__username', 'staff_id')
+    list_display = ('user', 'staff_id')
 
 # 5. Subject Admin
 @admin.register(Subject)
 class SubjectAdmin(admin.ModelAdmin):
     list_display = ('name', 'is_core')
-    list_filter = ('is_core',)
 
-# 6. ClassSubject Admin (The Schedule)
+# 6. Schedule Admin
 @admin.register(ClassSubject)
 class ClassSubjectAdmin(admin.ModelAdmin):
-    # This shows: "JHS 1 | Math | Mr. Osei" in the list
     list_display = ('class_assigned', 'subject', 'teacher')
-    # Filter by class so you can see "All subjects for JHS 1"
-    list_filter = ('class_assigned', 'subject')
+
+# --- NEW ADDITIONS (Week 4) ---
+
+# 7. Attendance Admin
+@admin.register(Attendance)
+class AttendanceAdmin(admin.ModelAdmin):
+    list_display = ('student', 'class_assigned', 'date', 'status')
+    list_filter = ('date', 'class_assigned', 'status')
+
+# 8. Grade Admin
+@admin.register(Grade)
+class GradeAdmin(admin.ModelAdmin):
+    list_display = ('student', 'subject', 'assessment_type', 'score', 'term')
+    
+    # FIXED: We change 'class_assigned__name' to 'student__current_class'
+    # This tells Django: "Look at the Student, then check their Current Class"
+    list_filter = ('subject', 'student__current_class', 'term')

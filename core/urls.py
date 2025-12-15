@@ -2,6 +2,8 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import StudentViewSet, ClassViewSet, TeacherViewSet
 from .views import StudentViewSet, ClassViewSet, TeacherViewSet, SubjectViewSet
+from .views import StudentViewSet, ClassViewSet, TeacherViewSet, SubjectViewSet, AttendanceViewSet, GradeViewSet
+
 
 # 1. The Router (The Automation Tool)
 # Instead of writing every URL manually (like /students/create, /students/delete),
@@ -9,7 +11,7 @@ from .views import StudentViewSet, ClassViewSet, TeacherViewSet, SubjectViewSet
 router = DefaultRouter()
 
 # 2. Registering the Routes
-# We tell the router: "If someone asks for 'students', send them to StudentViewSet"
+# "If someone asks for 'students', send them to StudentViewSet"
 router.register(r'students', StudentViewSet)
 router.register(r'classes', ClassViewSet)
 router.register(r'teachers', TeacherViewSet)
@@ -21,3 +23,13 @@ urlpatterns = [
     path('', include(router.urls)),
 ]
 
+
+
+router = DefaultRouter()
+# ... (Existing registers)
+router.register(r'attendance', AttendanceViewSet)
+router.register(r'grades', GradeViewSet)
+
+urlpatterns = [
+    path('', include(router.urls)),
+]
