@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import User, Class, Student, Teacher, Subject, ClassSubject
 from .models import Attendance, Grade 
+from .models import Payment
 
 # 1. User Serializer (Translates the User Model)
 class UserSerializer(serializers.ModelSerializer):
@@ -99,3 +100,12 @@ class GradeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Grade
         fields = ['id', 'student', 'student_details', 'subject', 'subject_details', 'assessment_type', 'score', 'term']
+    
+class PaymentSerializer(serializers.ModelSerializer):
+    student_details = StudentSerializer(source='student', read_only=True)
+
+    class Meta:
+        model = Payment
+        fields = ['id', 'student', 'student_details', 'amount', 'reference', 'email', 'status', 'date_created']
+        # The 'status' should be read-only because only Paystack can verify it, not the user.
+        read_only_fields = ['status']

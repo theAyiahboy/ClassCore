@@ -166,3 +166,21 @@ class Grade(models.Model):
 
     def __str__(self):
         return f"{self.student} - {self.subject} - {self.score}"
+    
+
+
+# Payment Model (Financials)
+class Payment(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2) # e.g., 500.00
+    reference = models.CharField(max_length=100, unique=True) # Paystack Transaction ID
+    email = models.EmailField() # Paystack needs an email
+    status = models.CharField(
+        max_length=20,
+        choices=[('PENDING', 'Pending'), ('VERIFIED', 'Verified')],
+        default='PENDING'
+    )
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.student} - GHS {self.amount} - {self.status}"

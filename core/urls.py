@@ -1,35 +1,29 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import StudentViewSet, ClassViewSet, TeacherViewSet
-from .views import StudentViewSet, ClassViewSet, TeacherViewSet, SubjectViewSet
-from .views import StudentViewSet, ClassViewSet, TeacherViewSet, SubjectViewSet, AttendanceViewSet, GradeViewSet
+# Import ALL your ViewSets in one place
+from .views import (
+    StudentViewSet, 
+    ClassViewSet, 
+    TeacherViewSet, 
+    SubjectViewSet, 
+    AttendanceViewSet, 
+    GradeViewSet, 
+    PaymentViewSet
+)
 
-
-# 1. The Router (The Automation Tool)
-# Instead of writing every URL manually (like /students/create, /students/delete),
-# The Router creates them ALL for us automatically.
+# 1. Create the Router (The Map Maker)
 router = DefaultRouter()
 
-# 2. Registering the Routes
-# "If someone asks for 'students', send them to StudentViewSet"
+# 2. Register ALL endpoints here
 router.register(r'students', StudentViewSet)
 router.register(r'classes', ClassViewSet)
 router.register(r'teachers', TeacherViewSet)
 router.register(r'subjects', SubjectViewSet)
-
-# 3. The URL Patterns
-# This is the list that Django actually reads.
-urlpatterns = [
-    path('', include(router.urls)),
-]
-
-
-
-router = DefaultRouter()
-# ... (Existing registers)
 router.register(r'attendance', AttendanceViewSet)
 router.register(r'grades', GradeViewSet)
+router.register(r'payments', PaymentViewSet)
 
+# 3. The URL Patterns
 urlpatterns = [
     path('', include(router.urls)),
 ]

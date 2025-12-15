@@ -5,6 +5,14 @@ from .models import Class, Student, Teacher, Subject  # Added Subject
 from .serializers import ClassSerializer, StudentSerializer, TeacherSerializer, SubjectSerializer # Added SubjectSerializer
 from .models import Class, Student, Teacher, Subject, Attendance, Grade
 from .serializers import ClassSerializer, StudentSerializer, TeacherSerializer, SubjectSerializer, AttendanceSerializer, GradeSerializer
+import requests # New import
+from rest_framework.decorators import action # New import
+from rest_framework.response import Response # New import
+from .models import Class, Student, Teacher, Subject, Attendance, Grade, Payment # Added Payment
+from .serializers import (
+    ClassSerializer, StudentSerializer, TeacherSerializer, 
+    SubjectSerializer, AttendanceSerializer, GradeSerializer, PaymentSerializer
+)
 
 
 
@@ -61,3 +69,39 @@ class GradeViewSet(viewsets.ModelViewSet):
     """
     queryset = Grade.objects.all()
     serializer_class = GradeSerializer
+
+class PaymentViewSet(viewsets.ModelViewSet):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+
+    # This is a Custom Action.
+    # It creates a new URL: /api/payments/verify_payment/
+    @action(detail=False, methods=['post'])
+    def verify_payment(self, request):
+        # 1. Get the reference from the user
+        reference = request.data.get('reference')
+        
+        if not reference:
+            return Response({'error': 'No reference provided'}, status=400)
+
+        # 2. Find the payment in our database
+        try:
+            payment = Payment.objects.get(reference=reference)
+        except Payment.DoesNotExist:
+            return Response({'error': 'Payment record not found'}, status=404)
+
+        # 3. Talk to Paystack to confirm
+        PAYSTACK_SECRET_KEY = sk_test_dfe9371315db792a6a7dab8dd2f9f74abb57470f 
+        headers = {"Authorization": f"Bearer {PAYSTACK_SECRET_KEY}"}
+        url = f"https://api.paystack.co/transaction/verify/{reference}"
+        response = requests.get(url, headers=headers)
+        response_data = response.json()
+
+        # 4. Check Paystack's answer
+        if response_data['status'] is True and response_data['data']['status'] == 'success':
+            # It's real money! Update our database.
+            payment.status = 'VERIFIED'
+            payment.save()
+            return Response({'status': 'Payment Verified', 'amount': payment.amount})
+        else:
+            return Response({'error': 'Verification failed'}, status=400)
