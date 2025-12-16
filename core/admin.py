@@ -41,7 +41,6 @@ class SubjectAdmin(admin.ModelAdmin):
 class ClassSubjectAdmin(admin.ModelAdmin):
     list_display = ('class_assigned', 'subject', 'teacher')
 
-# --- NEW ADDITIONS (Week 4) ---
 
 # 7. Attendance Admin
 @admin.register(Attendance)
@@ -54,6 +53,5 @@ class AttendanceAdmin(admin.ModelAdmin):
 class GradeAdmin(admin.ModelAdmin):
     list_display = ('student', 'subject', 'assessment_type', 'score', 'term')
     
-    # FIXED: We change 'class_assigned__name' to 'student__current_class'
-    # This tells Django: "Look at the Student, then check their Current Class"
+    
     list_filter = ('subject', 'student__current_class', 'term')
